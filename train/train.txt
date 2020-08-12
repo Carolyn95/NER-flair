@@ -1,0 +1,35 @@
+Horses B-ANIMAL
+are 0
+too 0
+tall 0
+and 0
+they 0
+pretend 0
+to 0
+care 0
+about 0
+your 0
+feelings 0
+
+Who 0
+is 0
+Shaka B-PERSON
+Khan I-PERSON
+? 0
+
+I 0
+like 0
+London B-LOCATION
+and 0
+Berlin B-LOCATION
+. 0
+
+There 0
+is 0
+a 0
+banyan B-TREE
+tree I-TREE
+in 0
+the 0
+courtyard 0
+

@@ -1,0 +1,8 @@
+first - reproduce tutorial
+dummy-data/dummy-data-1
+dummy-model/dummy-model-1 
+
+second - replace 'animal' and 'tree' entities with 'application' and 'device'
+dummy-data/dummy-data-2
+dummy-model/dummy-model-2
+
