@@ -1,11 +1,28 @@
 # ref: https://medium.com/thecyphy/training-custom-ner-model-using-flair-df1f9ea9c762
 # Sentence tokenizer and create data
+import random 
 import pandas as pd
 from tqdm import tqdm
 from difflib import SequenceMatcher
 import re
 import pickle as plk
+import numpy as np 
+import torch
 
+
+def setSeed(lucky_number): 
+  np.random.seed(lucky_number)
+  random.seed(lucky_number)
+  torch.manual_seed(lucky_number)
+  torch.cuda.manual_seed(lucky_number)
+  torch.cuda.manual_seed_all(lucky_number)
+  torch.backends.cudnn.enabled = False
+  torch.backends.cudnn.benchmark = False
+  torch.backends.cudnn.deterministic = True
+
+setSeed(2020)
+# BATCH_SIZE = 32
+# torch.utils.data.DataLoader(training, shuffle = True, batch_size=BATCH_SIZE, worker_init_fn=np.random.seed(0),num_workers=0)
 
 def matchSequence(string, pattern):
   """Return start and end index of any pattern present in the text
@@ -78,24 +95,32 @@ def makeData():
   """Show a smaill piece of example
   """
   data = pd.DataFrame(
-      [[
-          'Unable to login Clearpass',
-          [('Clearpass', 'APPLICATION')]
-      ], ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
-       [
-           'I like London and Berlin.',
-           [('London', 'LOCATION'), ('Berlin', 'LOCATION')]
+      [
+        ['Horses are too tall and they pretend to care about your feelings', [('Horses', 'ANIMAL')]],
+        ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
+        ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
+        ['There is a banyan tree in the courtyard', [('banyan tree', 'TREE')]],
+        ['Dogs are more adorable than cats', [('Dogs', 'ANIMAL'), ('cats', 'ANIMAL')]], 
+        ['John Watson is looking for his cap', [('John Watson', 'PERSON')]], 
+        ['Beijing is the capital city of China', [('Beijing', 'LOCATION')]], 
+        ['Leaves of Pine never yellow', [('Pine', 'TREE')]] 
+      ], 
        ],
-       ['Unable to bootup Probook 430 G3', [('Probook 430 G3', 'DEVICE')]]], columns=['text', 'annotation'])
+      ], 
+      columns=['text', 'annotation'])
 
-  filepath = 'dummy-data-2/test.txt'
-  createData(data, filepath)
+  filepath_train = 'dummy-data/dummy-data-2/train.txt'
+  filepath_dev = 'dummy-data/dummy-data-2/dev.txt'
+  filepath_test = 'dummy-data/dummy-data-2/test.txt'
+  createData(data, filepath_train)
+  createData(data, filepath_dev)
+  createData(data, filepath_test)
 
-def trainModel():
+def trainModel(serial_no):
   # define columns
   columns = {0 : 'text', 1 : 'ner'}
   # directory where the data resides
-  data_folder = 'dummy-data-2/'
+  data_folder = 'dummy-data/dummy-data-' + str(serial_no) + '/'
   # initializing the corpus
   from flair.datasets import ColumnCorpus
   corpus: Corpus = ColumnCorpus(data_folder, columns,
@@ -126,21 +151,23 @@ def trainModel():
   # Train model
   from flair.trainers import ModelTrainer
   trainer: ModelTrainer = ModelTrainer(tagger, corpus)
-  trainer.train('dummy-model-2',
+  trainer.train('dummy-model/dummy-model-' + str(serial_no),
                 learning_rate=0.1,
                 mini_batch_size=32,
                 max_epochs=150)
 
-def testModel():
+def testModel(serial_no, test_sent):
   # Use the trained model to predict
   from flair.data import Sentence
   from flair.models import SequenceTagger
-  model = SequenceTagger.load('dummy-model-2/final-model.pt')
-  sentence = Sentence('clearpass is not possible to login .')
+  modelpath = 'dummy-model/dummy-model-' + str(serial_no) + '/final-model.pt'
+  model = SequenceTagger.load(modelpath)
+  sentence = Sentence(test_sent)
   model.predict(sentence)
   print(sentence.to_tagged_string())
 
 if __name__ == '__main__':
+  # make sure the folder exists prior to execute this line
   # makeData()
-  # trainModel()
-  testModel()
+  trainModel(2)
+  # testModel(2, 'Watson is drinking water')

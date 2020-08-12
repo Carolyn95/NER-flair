@@ -1,8 +1,151 @@
-first - reproduce tutorial
+++++++++++
+deterministic
+manualSeed = 1
+
+np.random.seed(manualSeed)
+random.seed(manualSeed)
+torch.manual_seed(manualSeed)
+# if you are suing GPU
+torch.cuda.manual_seed(manualSeed)
+torch.cuda.manual_seed_all(manualSeed)
+
+
+torch.backends.cudnn.enabled = False 
+torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
+
+Seeding test 
+def setSeed(lucky_number): 
+  np.random.seed(lucky_number)
+  random.seed(lucky_number)
+  torch.manual_seed(lucky_number)
+  torch.cuda.manual_seed(lucky_number)
+  torch.cuda.manual_seed_all(lucky_number)
+  torch.backends.cudnn.enabled = False
+  torch.backends.cudnn.benchmark = False
+  torch.backends.cudnn.deterministic = True
+
+setSeed(2020)
+test round 1, exprmt 2
+Results:
+- F1-score (micro) 0.7890
+- F1-score (macro) 0.1737
+
+By class:
+0          tp: 43 - fp: 13 - fn: 0 - precision: 0.7679 - recall: 1.0000 - f1-score: 0.8687
+ANIMAL     tp: 0 - fp: 0 - fn: 3 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+LOCATION   tp: 0 - fp: 0 - fn: 3 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+PERSON     tp: 0 - fp: 0 - fn: 2 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+TREE       tp: 0 - fp: 0 - fn: 2 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+
+test round 2, exprmt 2
+Results:
+- F1-score (micro) 0.7890
+- F1-score (macro) 0.1737
+
+By class:
+0          tp: 43 - fp: 13 - fn: 0 - precision: 0.7679 - recall: 1.0000 - f1-score: 0.8687
+ANIMAL     tp: 0 - fp: 0 - fn: 3 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+LOCATION   tp: 0 - fp: 0 - fn: 3 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+PERSON     tp: 0 - fp: 0 - fn: 2 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+TREE       tp: 0 - fp: 0 - fn: 2 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+
+test round 3, exprmt 2
+Results:
+- F1-score (micro) 0.7890
+- F1-score (macro) 0.1737
+
+By class:
+0          tp: 43 - fp: 13 - fn: 0 - precision: 0.7679 - recall: 1.0000 - f1-score: 0.8687
+ANIMAL     tp: 0 - fp: 0 - fn: 3 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+LOCATION   tp: 0 - fp: 0 - fn: 3 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+PERSON     tp: 0 - fp: 0 - fn: 2 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+TREE       tp: 0 - fp: 0 - fn: 2 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+==========
+1 - reproduce tutorial
 dummy-data/dummy-data-1
 dummy-model/dummy-model-1 
+Train & Dev & Test:
+[
+  ['Horses are too tall and they pretend to care about your feelings', [('Horses', 'ANIMAL')]],
+  ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
+  ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
+  ['There is a banyan tree in the courtyard', [('banyan tree', 'TREE')]]
+]
 
-second - replace 'animal' and 'tree' entities with 'application' and 'device'
+==========
+2 - reproduce tutorial, 2 samples per entity
+dummy-data/dummy-data-1
+dummy-model/dummy-model-1 
+Train & Dev & Test:
+[
+  ['Horses are too tall and they pretend to care about your feelings', [('Horses', 'ANIMAL')]],
+  ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
+  ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
+  ['There is a banyan tree in the courtyard', [('banyan tree', 'TREE')]],
+  ['Dogs are more adorable than cats', [('Dogs', 'ANIMAL'), ('cats', 'ANIMAL')]], 
+  ['John Watson is looking for his cap', [('John Watson', 'PERSON')]], 
+  ['Beijing is the capital city of China', [('Beijing', 'LOCATION')]], 
+  ['Leaves of Pine never yellow', [('Pine', 'TREE')]] 
+]
+
+Test model: 
+Who is John Watson ?
+John Watson is drinking water
+John is drinking water
+Watson is drinking water
+==========
+3 - replace 'animal' and 'tree' entities with 'application' and 'device'
 dummy-data/dummy-data-2
 dummy-model/dummy-model-2
+[
+  ['Unable to login Clearpass', [('Clearpass', 'APPLICATION')]],
+  ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
+  ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
+  ['Unable to bootup Probook 430 G3', [('Probook 430 G3', 'DEVICE')]]
+]
 
+
+class SequenceTagger(flair.nn.Model):
+    def __init__(
+        self,
+        hidden_size: int,
+        embeddings: TokenEmbeddings,
+        tag_dictionary: Dictionary,
+        tag_type: str,
+        use_crf: bool = True,
+        use_rnn: bool = True,
+        rnn_layers: int = 1,
+        dropout: float = 0.0,
+        word_dropout: float = 0.05,
+        locked_dropout: float = 0.5,
+        reproject_embeddings: Union[bool,int] = True,
+        train_initial_hidden_state: bool = False,
+        rnn_type: str = "LSTM",
+        pickle_module: str = "pickle",
+        beta: float = 1.0,
+        loss_weights: Dict[str, float] = None,
+    ):
+            """
+        Initializes a SequenceTagger
+        :param hidden_size: number of hidden states in RNN
+        :param embeddings: word embeddings used in tagger
+        :param tag_dictionary: dictionary of tags you want to predict
+        :param tag_type: string identifier for tag type
+        :param use_crf: if True use CRF decoder, else project directly to tag space
+        :param use_rnn: if True use RNN layer, otherwise use word embeddings directly
+        :param rnn_layers: number of RNN layers
+        :param dropout: dropout probability
+        :param word_dropout: word dropout probability
+        :param reproject_embeddings: if True, adds trainable linear map on top of embedding layer. If False, no map.
+        If you set this to an integer, you can control the dimensionality of the reprojection layer
+        :param locked_dropout: locked dropout probability
+        :param train_initial_hidden_state: if True, trains initial hidden state of RNN
+        :param beta: Parameter for F-beta score for evaluation and training annealing
+        :param loss_weights: Dictionary of weights for classes (tags) for the loss function
+        (if any tag's weight is unspecified it will default to 1.0)
+
+        """
+
+# bidirectional LSTM on top of embedding layer
+# Create initial hidden state and initialize it        
