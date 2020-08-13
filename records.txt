@@ -72,6 +72,12 @@ Train & Dev & Test:
   ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
   ['There is a banyan tree in the courtyard', [('banyan tree', 'TREE')]]
 ]
+Test model: 
+Who is John Watson ?
+Who is Watson ?
+John Watson is drinking water
+John is drinking water
+Watson is drinking water
 
 ==========
 2 - reproduce tutorial, 2 samples per entity
@@ -89,11 +95,33 @@ Train & Dev & Test:
   ['Leaves of Pine never yellow', [('Pine', 'TREE')]] 
 ]
 
+Results:
+- F1-score (micro) 1.0000
+- F1-score (macro) 1.0000
+
+By class:
+0          tp: 43 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+ANIMAL     tp: 3 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+LOCATION   tp: 3 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+PERSON     tp: 2 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+TREE       tp: 2 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+
 Test model: 
 Who is John Watson ?
+Who is Watson ?
 John Watson is drinking water
 John is drinking water
+Jackson is watching TV 
+John is watching TV 
 Watson is drinking water
+What is a dog ?
+A cow is drinking water
+Counting sheep 
+Shanghai is a city in China
+Where is Shanghai
+Where is Beijing 
+Pine is taller than willow
+Pine is taller than banyan  
 ==========
 3 - replace 'animal' and 'tree' entities with 'application' and 'device'
 dummy-data/dummy-data-2
