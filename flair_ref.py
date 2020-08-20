@@ -8,6 +8,7 @@ import re
 import pickle as plk
 import numpy as np 
 import torch
+import pdb
 
 
 def setSeed(lucky_number): 
@@ -82,7 +83,7 @@ def createData(df, filepath):
       text_ = text
       match_list = []
       for i in annotation:
-        a, text_ = matchSequence(text, i[0])
+        a, text_ = matchSequence(text, i[0]) 
         match_list.append((a[0][0], a[0][1], i[1]))
 
       d = markSentence(text, match_list)
@@ -91,79 +92,15 @@ def createData(df, filepath):
       f.writelines('\n')
 
 
-def makeData():
-  """Show a smaill piece of example
-  """
-  data = pd.DataFrame(
-      [
-        ['Horses are too tall and they pretend to care about your feelings', [('Horses', 'ANIMAL')]],
-        ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
-        ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
-        ['There is a banyan tree in the courtyard', [('banyan tree', 'TREE')]],
-        ['Dogs are more adorable than cats', [('Dogs', 'ANIMAL'), ('cats', 'ANIMAL')]], 
-        ['John Watson is looking for his cap', [('John Watson', 'PERSON')]], 
-        ['Beijing is the capital city of China', [('Beijing', 'LOCATION')]], 
-        ['Leaves of Pine never yellow', [('Pine', 'TREE')]] 
-      ], 
-      columns=['text', 'annotation'])
+def makeData(template_path, save_path):
+  with open(template_path) as f:
+    data = f.read()
+    data = data.split('\n')
+    data = [eval(d.replace("],", ']').replace('"', '')) for d in data]
 
-  filepath_train = 'dummy-data/dummy-data-2/train.txt'
-  filepath_dev = 'dummy-data/dummy-data-2/dev.txt'
-  filepath_test = 'dummy-data/dummy-data-2/test.txt'
-  createData(data, filepath_train)
-  createData(data, filepath_dev)
-  createData(data, filepath_test)
+  df = pd.DataFrame(data, columns=['text', 'annotation'])
+  createData(df, save_path)
 
-def makeTrainData(dummydata_tmpl):
-  filepath_train = 'dummy-data/dummy-data-2/train.txt'
-  data = pd.DataFrame(
-    [
-      ['Horses are too tall and they pretend to care about your feelings', [('Horses', 'ANIMAL')]],
-      ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
-      ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
-      ['There is a banyan tree in the courtyard', [('banyan tree', 'TREE')]],
-      ['Dogs are more adorable than cats', [('Dogs', 'ANIMAL'), ('cats', 'ANIMAL')]], 
-      ['John Watson is looking for his cap', [('John Watson', 'PERSON')]], 
-      ['Beijing is the capital city of China', [('Beijing', 'LOCATION')]], 
-      ['Leaves of Pine never yellow', [('Pine', 'TREE')]] 
-    ], 
-    columns=['text', 'annotation'])
-  createData(data, filepath_train)
-  print()
-
-def makeDevData(dummydata_tmpl):
-  filepath_dev = 'dummy-data/dummy-data-2/dev.txt'
-  data = pd.DataFrame(
-    [
-      ['Horses are too tall and they pretend to care about your feelings', [('Horses', 'ANIMAL')]],
-      ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
-      ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
-      ['There is a banyan tree in the courtyard', [('banyan tree', 'TREE')]],
-      ['Dogs are more adorable than cats', [('Dogs', 'ANIMAL'), ('cats', 'ANIMAL')]], 
-      ['John Watson is looking for his cap', [('John Watson', 'PERSON')]], 
-      ['Beijing is the capital city of China', [('Beijing', 'LOCATION')]], 
-      ['Leaves of Pine never yellow', [('Pine', 'TREE')]] 
-    ], 
-    columns=['text', 'annotation'])  
-  createData(data, filepath_dev)
-  print()
-
-def makeTestData(dummydata_tmpl):
-  filepath_test = 'dummy-data/dummy-data-2/test.txt'
-  data = pd.DataFrame(
-    [
-      ['Horses are too tall and they pretend to care about your feelings', [('Horses', 'ANIMAL')]],
-      ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
-      ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
-      ['There is a banyan tree in the courtyard', [('banyan tree', 'TREE')]],
-      ['Dogs are more adorable than cats', [('Dogs', 'ANIMAL'), ('cats', 'ANIMAL')]], 
-      ['John Watson is looking for his cap', [('John Watson', 'PERSON')]], 
-      ['Beijing is the capital city of China', [('Beijing', 'LOCATION')]], 
-      ['Leaves of Pine never yellow', [('Pine', 'TREE')]] 
-    ], 
-    columns=['text', 'annotation'])  
-  createData(data, filepath_test)
-  print()
 
 def trainModel(serial_no):
   # define columns
@@ -217,6 +154,13 @@ def testModel(serial_no, test_sent):
 
 if __name__ == '__main__':
   # make sure the folder exists prior to execute this line
-  # makeData()
-  # trainModel(2)
-  testModel(2, 'Pine is taller than banyan ')
+  serial_no = 5
+  data_dir = 'dummy-data/dummy-data-' + str(serial_no) + '/'
+  flag = 'test'
+
+  template_path = data_dir + flag + '.tmpl'
+  save_path = data_dir + flag + '.txt'
+  # pdb.set_trace()
+  # makeData(template_path, save_path)
+  # trainModel(serial_no)
+  testModel(serial_no, 'Jason is playing guitar')

@@ -81,8 +81,8 @@ Watson is drinking water
 
 ==========
 2 - reproduce tutorial, 2 samples per entity
-dummy-data/dummy-data-1
-dummy-model/dummy-model-1 
+dummy-data/dummy-data-2
+dummy-model/dummy-model-2 
 Train & Dev & Test:
 [
   ['Horses are too tall and they pretend to care about your feelings', [('Horses', 'ANIMAL')]],
@@ -124,15 +124,130 @@ Pine is taller than willow
 Pine is taller than banyan  
 ==========
 3 - replace 'animal' and 'tree' entities with 'application' and 'device'
-dummy-data/dummy-data-2
-dummy-model/dummy-model-2
+one training sentence per entity
+dummy-data/dummy-data-3
+dummy-model/dummy-model-3
+Train & Dev & Test:
 [
   ['Unable to login Clearpass', [('Clearpass', 'APPLICATION')]],
   ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
   ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
   ['Unable to bootup Probook 430 G3', [('Probook 430 G3', 'DEVICE')]]
 ]
+Results:
+- F1-score (micro) 1.0000
+- F1-score (macro) 1.0000
 
+By class:
+0          tp: 13 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+APPLICATION tp: 1 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+DEVICE     tp: 1 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+LOCATION   tp: 2 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+PERSON     tp: 1 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+
+
+Test model: 
+I cannot login to clearpass 
+clearpass is not able to login 
+Shaka is who 
+Probook 430 G3 is not able to turn on 
+
+
+==========
+4 - replace 'animal' and 'tree' entities with 'application' and 'device'
+2 sentences per entity 
+dummy-data/dummy-data-4
+dummy-model/dummy-model-4
+Train & Dev & Test:
+[
+  ['Unable to login Clearpass', [('Clearpass', 'APPLICATION')]],
+  ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
+  ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
+  ['Unable to bootup Probook 430 G3', [('Probook 430 G3', 'DEVICE')]],
+  ['How to login X-drive', [('X-drive', 'APPLICATION')]],
+  ['Michael Jackson is in the study room with his friends.', [('Michael Jackson', 'PERSON')]],
+  ['Paris is in the rain.', [('Paris', 'LOCATION')]],
+  ['My HP Elitebook is not responding.', [('HP Elitebook', 'DEVICE')]]
+]
+Results:
+- F1-score (micro) 0.8989
+- F1-score (macro) 0.5792
+
+By class:
+0          tp: 35 - fp: 2 - fn: 0 - precision: 0.9459 - recall: 1.0000 - f1-score: 0.9722
+APPLICATION tp: 0 - fp: 0 - fn: 2 - precision: 0.0000 - recall: 0.0000 - f1-score: 0.0000
+DEVICE     tp: 1 - fp: 0 - fn: 1 - precision: 1.0000 - recall: 0.5000 - f1-score: 0.6667
+LOCATION   tp: 3 - fp: 1 - fn: 0 - precision: 0.7500 - recall: 1.0000 - f1-score: 0.8571
+PERSON     tp: 1 - fp: 2 - fn: 1 - precision: 0.3333 - recall: 0.5000 - f1-score: 0.4000
+
+Test model: 
+My HP Elitebook is not responding
+How to login X-drive
+
+
+==========
+5 - on top of 4
+2 sentences per entity 
+dummy-data/dummy-data-5
+dummy-model/dummy-model-5
+Train:
+[
+  ['Unable to login Clearpass', [('Clearpass', 'APPLICATION')]],
+  ['Who is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
+  ['I like London and Berlin.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
+  ['Unable to bootup Probook 430 G3', [('Probook 430 G3', 'DEVICE')]],
+  ['How to login X-drive', [('X-drive', 'APPLICATION')]],
+  ['Michael Jackson is in the study room with his friends.', [('Michael Jackson', 'PERSON')]],
+  ['Paris is in the rain.', [('Paris', 'LOCATION')]],
+  ['My HP Elitebook is not responding.', [('HP Elitebook', 'DEVICE')]]
+]
+Dev: 
+[
+  ['Clearpass is not connectable.', [('Clearpass', 'APPLICATION')]],
+  ['Shaka Khan is in the living room', [('Shaka Khan', 'PERSON')]],
+  ['I like Berlin not London.', [('London', 'LOCATION'), ('Berlin', 'LOCATION')]],
+  ['Where can I get a Probook 430 G3', [('Probook 430 G3', 'DEVICE')]],
+  ['X-drive is an internal application', [('X-drive', 'APPLICATION')]],
+  ['Michael Jackson is in the study room.', [('Michael Jackson', 'PERSON')]],
+  ['Paris is a city of romance.', [('Paris', 'LOCATION')]],
+  ['My laptop model is HP Elitebook.', [('HP Elitebook', 'DEVICE')]]
+]
+Test:
+[
+  ['How can I login Clearpass', [('Clearpass', 'APPLICATION')]],
+  ['where is Shaka Khan?', [('Shaka Khan', 'PERSON')]],
+  ['Where is Berlin', [('Berlin', 'LOCATION')]],
+  ['How to bootup Probook 430 G3', [('Probook 430 G3', 'DEVICE')]],
+  ['How to connect to X-drive', [('X-drive', 'APPLICATION')]],
+  ['Michael Jackson is in the living room with his friends.', [('Michael Jackson', 'PERSON')]],
+  ['Paris is the capital city of France.', [('Paris', 'LOCATION')]],
+  ['My HP Elitebook is able to turn on.', [('HP Elitebook', 'DEVICE')]]
+]
+
+Results:
+- F1-score (micro) 1.0000
+- F1-score (macro) 1.0000
+
+By class:
+0          tp: 38 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+APPLICATION tp: 2 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+DEVICE     tp: 2 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+LOCATION   tp: 2 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+PERSON     tp: 2 - fp: 0 - fn: 0 - precision: 1.0000 - recall: 1.0000 - f1-score: 1.0000
+
+Test model: 
+My HP Elitebook is not responding
+How to login X-drive
+Berlin is my favourite city. 
+France is my favourite country. 
+Tokyo is the capital city of Japan. 
+Seattle is in US. 
+Seattle is a city. 
+Where is Jackson
+Where is Jason
+Jackson is in the kichen
+Jackson is playing guitar
+Jason is playing guitar
 
 class SequenceTagger(flair.nn.Model):
     def __init__(
