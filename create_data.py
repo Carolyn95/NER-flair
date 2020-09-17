@@ -3,11 +3,13 @@ Synthetic data format
 Sentence, [word to mark], [label to word]
 First define a template, containing two sections, sentence template, and entity list, separated by ==========, stored in folder `template`
 execute this script, it will generate data stored in folder `synthetic-data`
+synthetic data is annotated with BIO schema
 """
 import pdb
 from random import choice, random 
 import re
 from difflib import SequenceMatcher
+import argparse
 
 
 def annotateSpan(template, label):
@@ -61,20 +63,33 @@ def markBIO(annotated_text):
 
 # file_name = 'text_apps.tmpl'
 # tag_type = 'APPLICATION'
-file_name = 'text_devices.tmpl'
-tag_type = 'DEVICE'
+# file_name = 'text_devices.tmpl'
+# tag_type = 'DEVICE'
 
-def createData(n, template_file, tag_type):
-  save_path = template_file.split('.')[0] + '.txt'
+
+def createData(n, template_file, tag_type, output_file):
+  save_path = 'synthetic-data/' + template_file.split('.')[0] + '.txt' if output_file is None else output_file
   with open(save_path, 'w') as f:
     for _ in range(n):
-      annotated_text = (annotateSpan(file_name, tag_type))
+      tmpl_file_name = 'templates/' + file_name
+      annotated_text = (annotateSpan(tmpl_file_name, tag_type))
       word_dict = markBIO(annotated_text)
       for w in word_dict.keys():
         f.writelines(w + ' ' + word_dict[w] + '\n')
       f.writelines('\n')
 
-### n refers to how many samples you wanna generate
-createData(500, template_file=file_name, tag_type=tag_type)
 
-pdb.set_trace()
+
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--tmpl_name", default='./templates/text_apps.tmpl', type=str, required=True, help="The template file defining template to generate synthetic data")
+  parser.add_argument("--tag_type", default='APPLICATION', type=str, required=True, help="Label to annotate synthetic data")
+  parser.add_argument("--output_file", default=None, required=False, help="The output file name")
+  args = parser.parse_args()
+
+  file_name = args.tmpl_name
+  tag_type = args.tag_type
+  output_file = args.output_file
+
+  ### n refers to how many samples you wanna generate
+  createData(n=50, template_file=file_name, tag_type=tag_type, output_file=output_file)

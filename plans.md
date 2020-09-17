@@ -1,3 +1,5 @@
+# base environment: source ~/environments/torch_envr/bin/activate
+
 * data preparation
 fault report
 statements that user may use to report faults
@@ -51,5 +53,8 @@ prepare data
   * train, dev, test 
   * model settings: hidden_size=256, embedding: WordEmbeddings('glove')
   * hyperparams: learning_rate=.1, mini_batch_size=32, max_epochs=150
-## 20200819
+
+
+## 20200917
+
 
