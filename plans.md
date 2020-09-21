@@ -56,5 +56,12 @@ prepare data
 
 
 ## 20200917
+* add argparse to the script of generating synthetic data
+`python create_data.py --tmpl_name=text_devices.tmpl --tag_type=DEVICE --num_sample=150`
 
+* sample synthetic data to create training dataset
 
+* 3 exprmts 
+  * exprmt 1: 150 (smp/ent) x 4 (ent) = 600 smp, take fractions (2.5% ~ 15, 5%, 10%, 20%) from whole dataset as training set, rest for testing
+  * exprmt 2: create entirely unseen dataset (not using tmpl) for testing -> breaking test, don't need to re-train above model, just use it as it is to test on this unseen testing set
+  * exprmt 3: use all sampling data to train model, test on exprmt 2's testing set

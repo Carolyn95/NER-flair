@@ -85,11 +85,13 @@ if __name__ == '__main__':
   parser.add_argument("--tmpl_name", default='./templates/text_apps.tmpl', type=str, required=True, help="The template file defining template to generate synthetic data")
   parser.add_argument("--tag_type", default='APPLICATION', type=str, required=True, help="Label to annotate synthetic data")
   parser.add_argument("--output_file", default=None, required=False, help="The output file name")
+  parser.add_argument("--num_sample", default=50, required=True, help="Number of synthetic data to generate")
   args = parser.parse_args()
 
   file_name = args.tmpl_name
   tag_type = args.tag_type
   output_file = args.output_file
+  n = int(args.num_sample)
 
   ### n refers to how many samples you wanna generate
-  createData(n=50, template_file=file_name, tag_type=tag_type, output_file=output_file)
+  createData(n=n, template_file=file_name, tag_type=tag_type, output_file=output_file)
