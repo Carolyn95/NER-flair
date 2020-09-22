@@ -60,6 +60,10 @@ prepare data
 `python create_data.py --tmpl_name=text_devices.tmpl --tag_type=DEVICE --num_sample=150`
 
 * sample synthetic data to create training dataset
+`python sample_synthetic_data.py`
+
+* start experiment
+  * sanity check: `python train_toymodels.py --model=bert-base-cased`
 
 * 3 exprmts 
   * exprmt 1: 150 (smp/ent) x 4 (ent) = 600 smp, take fractions (2.5% ~ 15, 5%, 10%, 20%) from whole dataset as training set, rest for testing

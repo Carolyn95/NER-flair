@@ -62,6 +62,6 @@ def readSingle(data_path, sample_rate=1, save_path=None):
 if __name__ == '__main__':
   # sample rate list: [0.025, 0.05, 0.1, 0.2] -> [2.5%, 5%, 10%, 20%]
   # corresponding dir: [2pt5pct, 5pct, 10pct, 20pct]
-  readDataFolder('synthetic-data', True, 0.2, '20pct')
+  readDataFolder('synthetic-data', True, 0.025, '2pt5pct')
   # readSingle('synthetic-data/text_apps.txt', 1, 'test_toyscript2')
   print()

@@ -47,7 +47,7 @@ def markBIO(annotated_text):
   pointer = 0
   for word in text.split():
     if pointer < start:
-      word_dict[word] = '0'
+      word_dict[word] = 'O'
     elif pointer >= start and pointer < end: 
       if len(temp_str_tokens) > 1:
         word_dict[temp_str_tokens[0]] = 'B-' + type
@@ -56,7 +56,7 @@ def markBIO(annotated_text):
       else:
         word_dict[temp_str] = 'B-' + type
     else:
-      word_dict[word] = '0'
+      word_dict[word] = 'O'
     pointer += (len(word) + 1)
   print(word_dict)
   return word_dict
