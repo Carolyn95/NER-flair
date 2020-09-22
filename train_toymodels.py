@@ -70,8 +70,15 @@ def trainNER(data_dir, model_dir):
   # pdb.set_trace()
   # print(data_dir + '/eng.train')
   corpus: Corpus = ColumnCorpus(data_dir, columns)
+  corpus.filter_empty_sentences()
   tag_type = 'ner'
-  tag_dictionary = corpus.make_tag_dictionary(tag_type=tag_type)
+  # tag_dictionary = corpus.make_tag_dictionary(tag_type=tag_type)
+  tag_dictionary = corpus.make_label_dictionary('ner')
+  print(tag_dictionary.get_items())
+  stats = corpus.obtain_statistics()
+  print(stats)
+  # ['<unk>', 'O', 'B-DEVICE', 'I-DEVICE', 'B-TREE', 'I-TREE', 'B-APPLICATION', 'I-APPLICATION', 'B-LOCATION', 'I-LOCATION', '<START>', '<STOP>']
+  # pdb.set_trace()
 
   embedding_types: List[TokenEmbeddings] = [
     WordEmbeddings('glove'), 
@@ -136,6 +143,6 @@ def testModel(model_dir, test_sent=None, test_file_dir=None):
   print('end')
 
 if __name__ == '__main__':
-  convertData('2pt5pct', '2pt5pct/data')
-  trainNER('2pt5pct/data', '2pt5pct/models')
-  # testModel('20pct/models', test_file_dir='20pct/data')
+  convertData('20pct', '20pct/data')
+  trainNER('20pct/data', '20pct/models')
+  testModel('20pct/models', test_file_dir='20pct/data')
