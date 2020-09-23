@@ -32,7 +32,7 @@ def convertData(data_dir, save_dir):
     os.mkdir(save_dir)
 
   data_dir = Path(data_dir)
-  DOC_START_STRING = {'train': '', 'dev': '', 'test': ''}
+  # DOC_START_STRING = {'train': '', 'dev': '', 'test': ''}
   for data_filename in os.listdir(data_dir):
     if 'train' in data_filename:
       data = np.load(data_dir / data_filename, allow_pickle=True)
@@ -143,6 +143,7 @@ def testModel(model_dir, test_sent=None, test_file_dir=None):
   print('end')
 
 if __name__ == '__main__':
-  convertData('20pct', '20pct/data')
-  trainNER('20pct/data', '20pct/models')
-  testModel('20pct/models', test_file_dir='20pct/data')
+  # convertData('20pct', '20pct/data')
+  # trainNER('20pct/data', '20pct/models')
+  # testModel('20pct/models', test_file_dir='20pct/data')
+  testModel('10pct/models', test_file_dir='20pct/data')

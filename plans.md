@@ -69,3 +69,7 @@ prepare data
   * exprmt 1: 150 (smp/ent) x 4 (ent) = 600 smp, take fractions (2.5% ~ 15, 5%, 10%, 20%) from whole dataset as training set, rest for testing
   * exprmt 2: create entirely unseen dataset (not using tmpl) for testing -> breaking test, don't need to re-train above model, just use it as it is to test on this unseen testing set
   * exprmt 3: use all sampling data to train model, test on exprmt 2's testing set
+
+* rectify exprmts
+  * take samples from 20%, freeze testing set so that the result could be convincing and reasonable
+    
