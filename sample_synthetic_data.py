@@ -4,9 +4,12 @@ import numpy as np
 import pdb
 from pathlib import Path
 import random  
+from collections import Counter
 
+seed = 2020
+random.seed(seed)
+np.random.seed(seed)
 
-random.seed(2020)
 def readDataFolder(data_folder, is_randomized=True, sample_rate=1, save_path=None): 
   """Read separate data from a data folder
   # data_folder, is_randomized, sample_rate, save_path
@@ -58,14 +61,13 @@ def readSingle(data_path, sample_rate=1, save_path=None):
     data_test = [d for d in data if d not in data_train]
     np.save(save_path / (os.path.split(data_path)[-1].split('.')[0] + '_test'), data_test)
 
-
+"""
 def strictSample(data_folder, is_randomized=True, sample_rate=1, save_path=None):
-  """aim at fixing test set and sample sub-samples from sub-training set 
-  data_folder: temp data folder, containing sub-training and testing
-  sub-training is exactly 20pct of synthetic data
-  sample rate: [1, 1/2, 1/4, 1/8]
-  naming: ['20pct', '10pct', '5pct', '2pt5pct']
-  """
+  # aim at fixing test set and sample sub-samples from sub-training set 
+  # data_folder: temp data folder, containing sub-training and testing
+  # sub-training is exactly 20pct of synthetic data
+  # sample rate: [1, 1/2, 1/4, 1/8]
+  # naming: ['20pct', '10pct', '5pct', '2pt5pct']
   # mapping = {1: '20pct', 1/2: '10pct', 1/4: '5pct', 1/8: '2pt5pct'}
   data_folder = Path(data_folder)
   if save_path:
@@ -90,6 +92,99 @@ def strictSample(data_folder, is_randomized=True, sample_rate=1, save_path=None)
       print('Not target file')
   
   print()
+"""
+
+def strictSample(data_folder, sample_rate, save_path):
+  """
+  read a numpy array, count category in the array, save it in a list
+  print the result
+  stratified sampling from the newly created list 
+  data_folder, save_path
+  """
+  def categorize(x):
+    if 'APPLICATION' in x:
+      return 'APPLICATION'
+    elif 'DEVICE' in x:
+      return 'DEVICE'
+    elif 'LOCATION' in x:
+      return 'LOCATION'
+    elif 'TREE' in x:
+      return 'TREE'
+    else:
+      raise EXCEPTION("Not recognisable entity")
+  
+  data_folder = Path(data_folder)
+  save_path = Path(save_path)
+  if not os.path.exists(save_path):
+    os.mkdir(save_path)
+  for filename in os.listdir(data_folder):
+    if 'test' in filename:
+      test_data = np.load(data_folder / filename, allow_pickle=True)
+      np.save(save_path / 'test.npy', test_data)
+    elif 'train' in filename:
+      train_data = np.load(data_folder / filename, allow_pickle=True)
+      train_cats = [categorize(x) for x in train_data]
+      train_cats_counter = Counter(train_cats)
+      cats = []
+      samples = {}
+      temp = []
+      for i, c in enumerate(sorted(train_cats)):
+        if c not in cats:
+          cats.append(c)
+          temp = []
+        temp.append(i)      
+        if temp and len(temp) == train_cats_counter[c]:
+          sample_temp = random.sample(temp, int(len(temp) * sample_rate))
+          samples[c] = sample_temp
+      sampled_train = []
+      for key, val in samples.items():
+        temp = train_data[val].tolist()
+        sampled_train += temp
+      np.save(save_path / 'train.npy', sampled_train)
+    else:
+      print('Not target file')
+
+
+def prepareSmallPercentage(test_ds, train_ds, sample_rate, save_path):
+  """
+  * save test_ds in save_path
+  * sample train_ds by category and sample_rate
+  * save resampled train_df in save_path
+  """
+  if not os.path.exists(save_path):
+    os.mkdir(save_path)
+  save_path = Path(save_path)
+  np.save(save_path / 'test.npy', test_ds)
+
+  def categorize(x):
+    if 'APPLICATION' in x:
+      return 'APPLICATION'
+    elif 'DEVICE' in x:
+      return 'DEVICE'
+    elif 'LOCATION' in x:
+      return 'LOCATION'
+    else:
+      raise EXCEPTION("Not recognisable entity")
+
+  train_cats = [categorize(x) for x in train_ds]
+  train_cats_counter = Counter(train_cats)
+  cats = []
+  samples = {}
+  temp = []
+  for i, c in enumerate(sorted(train_cats)):
+    if c not in cats:
+      cats.append(c)
+      temp = []
+    temp.append(i)      
+    if temp and len(temp) == train_cats_counter[c]:
+      sample_temp = random.sample(temp, int(len(temp) * sample_rate))
+      samples[c] = sample_temp
+  sampled_train = []
+  for key, val in samples.items():
+    temp = train_ds[val].tolist()
+    sampled_train += temp
+  np.save(save_path / 'train.npy', sampled_train)
+
 
 if __name__ == '__main__':
   # sample rate list: [0.025, 0.05, 0.1, 0.2] -> [2.5%, 5%, 10%, 20%]
@@ -97,5 +192,9 @@ if __name__ == '__main__':
   # readDataFolder('synthetic-data', True, 0.2, 'tmp')
   # readSingle('synthetic-data/text_apps.txt', 1, 'test_toyscript2')
   # mapping = {1: '20pct', 1/2: '10pct', 1/4: '5pct', 1/8: '2pt5pct'}
-  strictSample('tmp', True, 1/8, '2pt5pct')
+  # strictSample('tmp', 1, '20pct')
+  train_ds = np.load('20pct/train.npy', allow_pickle=True) 
+  test_ds = np.load('20pct/test.npy', allow_pickle=True)
+  # sample_rate and save_path mapping: {1: '20pct', 1/2: '10pct', 1/4: '5pct', 1/8: '2pt5pct}
+  prepareSmallPercentage(test_ds, train_ds, 1/8, '2pt5pct')
   print()

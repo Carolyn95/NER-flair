@@ -1,5 +1,88 @@
 import pdb 
 import pandas as pd 
+from pathlib import Path 
+import os 
+import numpy as np 
+from collections import Counter
+import random
+
+# add on 20201019, create synthetic test data, diff sentence structure from train, same set of entity
+seed = 2020
+random.seed(seed)
+np.random.seed(seed)
+
+
+def createSanityTestData(data_folder, file_name_list, save_path):
+  if data_folder:
+    file_name_list = [data_folder + fn for fn in file_name_list]
+  if not os.path.exists(save_path):
+    os.mkdir(save_path)
+  save_path = Path(save_path)
+  alldata = []
+  for file_name in file_name_list:
+    with open(file_name, 'r') as f:
+      data = list(filter(None, f.read().split('\n\n')))
+      alldata += data
+  random.shuffle(alldata)
+  alldata = np.array(alldata)
+  np.save(save_path / 'all_test.npy', alldata)
+
+data_folder = 'synthetic-data/'
+file_name_list = ['new_applications.txt', 'new_devices.txt', 'new_locations.txt']
+save_path = 'SanityTestData'
+
+createSanityTestData(data_folder, file_name_list, save_path)
+
+
+def strfSample(data_folder, is_randomized, sample_rate, save_path):
+  """
+  read a numpy array, count category in the array, save it in a list
+  print the result
+  stratified sampling from the newly created list 
+  data_folder, save_path
+  """
+  def categorize(x):
+    if 'APPLICATION' in x:
+      return 'APPLICATION'
+    elif 'DEVICE' in x:
+      return 'DEVICE'
+    elif 'LOCATION' in x:
+      return 'LOCATION'
+    elif 'TREE' in x:
+      return 'TREE'
+    else:
+      raise EXCEPTION("Not recognisable entity")
+  
+  data_folder = Path(data_folder)
+  save_path = Path(save_path)
+  if not os.path.exists(save_path):
+    os.mkdir(save_path)
+  for filename in os.listdir(data_folder):
+    if 'test' in filename:
+      test_data = np.load(data_folder / filename, allow_pickle=True)
+      np.save(save_path / 'test.npy', test_data)
+    elif 'train' in filename:
+      train_data = np.load(data_folder / filename, allow_pickle=True)
+      train_cats = [categorize(x) for x in train_data]
+      train_cats_counter = Counter(train_cats)
+      cats = []
+      samples = {}
+      temp = []
+      for i, c in enumerate(sorted(train_cats)):
+        if c not in cats:
+          cats.append(c)
+          temp = []
+        temp.append(i)      
+        # pdb.set_trace()
+        if temp and len(temp) == train_cats_counter[c]:
+          sample_temp = random.sample(temp, int(len(temp) * sample_rate))
+          samples[c] = sample_temp                  
+    else:
+      print('Not target file')
+  return samples
+
+test = strfSample('tmp', True, 1, 'test10pct')
+pdb.set_trace()
 
 # dummy-data-#/train.tmpl
 serial_no = 1

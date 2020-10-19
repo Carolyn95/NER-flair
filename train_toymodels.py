@@ -143,7 +143,6 @@ def testModel(model_dir, test_sent=None, test_file_dir=None):
   print('end')
 
 if __name__ == '__main__':
-  # convertData('20pct', '20pct/data')
-  # trainNER('20pct/data', '20pct/models')
-  # testModel('20pct/models', test_file_dir='20pct/data')
-  testModel('10pct/models', test_file_dir='20pct/data')
+  convertData('2pt5pct', '2pt5pct/data')
+  trainNER('2pt5pct/data', '2pt5pct/models')
+  testModel('2pt5pct/models', test_file_dir='2pt5pct/data')
