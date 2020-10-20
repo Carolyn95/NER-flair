@@ -6,6 +6,87 @@ import numpy as np
 from collections import Counter
 import random
 
+# add on 20201019, test using original model but swap testing data set
+# environment: source ~/Projects/othersgit/BERT-NER/envr/bin/activate
+# transformers version == 3.0.2 should work
+
+import torch
+seed = 2020
+random.seed(seed)
+np.random.seed(seed)
+torch.manual_seed(seed)
+
+from flair.data import Corpus, Sentence
+from flair.embeddings import TransformerWordEmbeddings, StackedEmbeddings, WordEmbeddings
+from typing import List
+from flair.models import SequenceTagger
+from flair.trainers import ModelTrainer
+from flair.datasets import ColumnCorpus
+import argparse
+import pdb 
+import traceback
+
+def convertData(data_file_path, save_dir):
+  if not os.path.exists(save_dir):
+    os.mkdir(save_dir)
+  save_dir = Path(save_dir)
+  data = np.load(data_file_path, allow_pickle=True)
+  with open(save_dir / 'test.txt', 'w') as f:
+    # f.write('-DOCSTART- -X- -X- O\n\n')
+    for d in data:
+      f.write(d)
+      f.write('\n\n')      
+  print('Convertion done!')
+
+# convertData('SanityTestData/all_test.npy', 'SanityTestData')
+
+def testModel(model_dir, test_sent=None, test_file_dir=None):
+  """
+  model_dir: directory contains 'final_model.pt'
+  test_sent: one sentence to test
+  test_file: one file of sentences to test
+  """
+  if test_sent and test_file_dir:
+    raise Exception("Argument conflicts, only one type of testing method is allowed.")
+  elif not test_sent and not test_file_dir:
+    raise Exception("Argument invalid, at least one testing method is required") 
+  
+  model_path = model_dir + '/final-model.pt'                            
+  tagger = SequenceTagger.load(model_path)
+  # pdb.set_trace()
+
+  if test_sent:
+    print('Predicting in singular mode')
+    test_sent = Sentence(test_sent)
+    try:
+      tagger.predict(test_sent)
+    except:
+      traceback.print_exc()
+    print(test_sent.to_tagged_string())
+
+  if test_file_dir:
+    print('Predicting in plural mode')
+    try:
+      columns = {0: 'text', 1: 'ner'}
+      corpus = ColumnCorpus(test_file_dir, columns)
+      test_data = corpus.test 
+    except Exception:
+      traceback.print_exc() 
+      raise Exception('Directory must contain `test.txt` file, one column `text` the other `ner`')
+    
+    test_result, test_loss = tagger.evaluate(test_data, out_path=test_file_dir + '/test.tsv')
+    result_line = f"\t{test_loss}\t{test_result.log_line}"
+    print(f"TEST : loss {test_loss} - score {round(test_result.main_score, 4)}")
+    print(f"TEST RESULT : {result_line}")
+
+  print('Model prediction ends')
+
+
+testModel('2pt5pct/models', test_file_dir='SanityTestData/data')
+# testModel('20pct/models', test_sent='hello bert')
+pdb.set_trace()
+
+
 # add on 20201019, create synthetic test data, diff sentence structure from train, same set of entity
 seed = 2020
 random.seed(seed)
