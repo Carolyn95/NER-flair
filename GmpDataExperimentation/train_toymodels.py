@@ -143,6 +143,14 @@ def testModel(model_dir, test_sent=None, test_file_dir=None):
   print('end')
 
 if __name__ == '__main__':
-  convertData('2pt5pct', '2pt5pct/data')
-  trainNER('2pt5pct/data', '2pt5pct/models')
-  testModel('2pt5pct/models', test_file_dir='2pt5pct/data')
+  # === synthetic data ===
+  # convertData('2pt5pct', '2pt5pct/data')
+  # trainNER('2pt5pct/data', '2pt5pct/models')
+  # testModel('2pt5pct/models', test_file_dir='2pt5pct/data')
+  
+  # === GMB data === 
+  # trainNER('processed_data/15_data', 'processed_data/15_data/models')
+  # testModel('processed_data/15_data/models', test_file_dir='processed_data/15_data')
+
+  # === Emerging Entities 17 ===
+  
