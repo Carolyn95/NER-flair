@@ -90,4 +90,3 @@ if __name__ == '__main__':
   sampleData('1500_data/train.txt', 'data/test.txt', '150_data', 150)
   sampleData('1500_data/train.txt', 'data/test.txt', '15_data', 15)
 
-
