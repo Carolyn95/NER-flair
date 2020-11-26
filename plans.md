@@ -73,3 +73,28 @@ prepare data
 * rectify exprmts
   * take samples from 20%, freeze testing set so that the result could be convincing and reasonable
     
+## 20201116
+classfication result:
+- with prefix
+- without prefix
+
+-- scripts
+-- data
+-- result 
+
+# 20201117
+- find next empty
+  - <!-- preserve empty by using series -->
+  - preserve all empty lines index
+  - find nearest index from current word from empty lines index
+  - concatenate word and compose sentence
+# 20201118 
+- compare tokenization embedding 
+
+
+TSNE -> visual
+clustering
+
+- ideas when coding
+-- solve single embedding error problem
+convert columncorpus to sentence 
