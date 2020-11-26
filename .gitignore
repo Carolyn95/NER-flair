@@ -23,3 +23,8 @@ EmergingEntities17/emerging.test.annotated
 EmergingEntities17/emerging.test.conll
 EmergingEntities17/wnut17train.conll
 temp-20201022/
+.vscode/
+*.txt
+*.tsv
+*.pt
+*.log
