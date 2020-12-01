@@ -75,7 +75,7 @@ def trainNER(data_dir, model_dir):
   # pdb.set_trace()
   # print(data_dir + '/eng.train')
   from flair.datasets import CONLL_03
-  corpus: Corpus = CONLL_03(base_path='oneshot-conll/')
+  corpus: Corpus = CONLL_03(base_path='conll_frac/10ptdata/')
   # corpus: Corpus = ColumnCorpus(data_dir, columns)
   corpus.filter_empty_sentences()
   tag_type = 'ner'
@@ -101,12 +101,13 @@ def trainNER(data_dir, model_dir):
   embeddings: StackedEmbeddings = StackedEmbeddings(embeddings=embedding_types)
 
   # biLSTM + CRF
-  tagger: SequenceTagger = SequenceTagger(hidden_size=256,
-                                          embeddings=embeddings,
-                                          tag_dictionary=tag_dictionary,
-                                          tag_type=tag_type)
-  # model_path = model_dir + '/final-model.pt'
-  # model = SequenceTagger.load(model_path)
+  # tagger: SequenceTagger = SequenceTagger(hidden_size=256,
+  #                                         embeddings=embeddings,
+  #                                         tag_dictionary=tag_dictionary,
+  #                                         tag_type=tag_type)
+
+  model_path = '/home/carolyn/Projects/mygit/Flair-NER/exprmt-20201120/conll_frac/10ptdata/models-5e-20201124/final-model.pt'
+  tagger: SequenceTagger = SequenceTagger.load(model_path)
 
   trainer: ModelTrainer = ModelTrainer(tagger, corpus)
 
@@ -168,11 +169,11 @@ if __name__ == '__main__':
   # convertData('2pt5pct', '2pt5pct/data')
   # trainNER('2pt5pct/data', '2pt5pct/models')
   # convertData('exprmt-20201120/oneshot-conll/conll_03', 'exprmt-20201120/oneshot-conll/conll_03/data')
-  trainNER('conll_03/data', 'conll_03/models_20201124')
+  trainNER('conll_frac/10ptdata', 'conll_frac/10ptdata/models_20201201')
 
   testModel(
-      'conll_03/models_20201124',
+      'conll_frac/10ptdata/models_20201201',
       test_sent=
       'Alejandro Lanusse , the former dictator who ruled Argentina for two years , died at age 78 on Monday .'
   )
-  testModel('conll_03/models_20201124', test_file_dir='conll_03/data')
+  # testModel('conll_03/models_20201124', test_file_dir='conll_03/data')

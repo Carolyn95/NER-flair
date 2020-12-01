@@ -9,12 +9,32 @@ import argparse
 from flair.data import Corpus
 from flair.datasets import CONLL_03
 
+
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument("--data_dir", default='./', type=str, help="The parent dir of input data, should include folder named `conll_03` ")
-  parser.add_argument("--model_dir", default=None, type=str, required=True, help="The model directory where model chekpoints stored")
-  parser.add_argument("--result_file", default='test.tsv', type=str, required=True, help="The name of prediction file, which is in the same dir of model dir")
-  parser.add_argument("--eval_on", default='dev', type=str, required=True, help="Whether to eval on dev set or test set")
+  parser.add_argument(
+      "--data_dir",
+      default='./',
+      type=str,
+      help=
+      "The parent dir of input data, should include folder named `conll_03` ")
+  parser.add_argument("--model_dir",
+                      default=None,
+                      type=str,
+                      required=True,
+                      help="The model directory where model chekpoints stored")
+  parser.add_argument(
+      "--result_file",
+      default='dev.tsv',
+      type=str,
+      required=True,
+      help=
+      "The name of prediction file, default is in the same dir of script file")
+  parser.add_argument("--eval_on",
+                      default='dev',
+                      type=str,
+                      required=True,
+                      help="Whether to eval on dev set or test set")
 
   args = parser.parse_args()
 
@@ -32,13 +52,13 @@ def main():
   test_result, test_loss = model.evaluate(testdata, out_path=args.result_file)
   result_line = f"\t{test_loss}\t{test_result.log_line}"
 
-
   # main score is micro averaged f1 score
-  # result line is precision, recall, micro averaged score 
+  # result line is precision, recall, micro averaged score
 
   print(f"TEST : loss {test_loss} - score {round(test_result.main_score, 4)}")
   print(f"TEST RESULT: {result_line}")
   print(test_result.detailed_results)
+
 
 if __name__ == '__main__':
   main()

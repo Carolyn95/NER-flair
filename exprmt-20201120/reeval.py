@@ -1,9 +1,9 @@
-import pandas as pd 
-import pdb 
-import csv 
-import numpy as np 
+import pandas as pd
+import pdb
+import csv
+import numpy as np
 from sklearn.metrics import confusion_matrix
-import os 
+import os
 from sklearn import metrics
 
 
@@ -13,7 +13,6 @@ def removeBioFromResult(result_file):
   sent_breaker = []
   with open(result_file) as f:
     result_data = csv.reader(f, delimiter='\t')
-    
     for i, line in enumerate(result_data):
       if line:
         row = line[0].split(' ')
@@ -32,7 +31,7 @@ def getOrgDF(result_file):
   sent_breaker = []
   with open(result_file) as f:
     result_data = csv.reader(f, delimiter='\t')
-    
+
     for i, line in enumerate(result_data):
       if line:
         row = line[0].split(' ')
@@ -61,28 +60,32 @@ def findSentBoundary(result_df, labels):
         sent_start = 0
         sent_end = sent_breaker[0]
         print(idx, sent_start, sent_end)
-        sent = ' '.join(full_list[sent_start: sent_end+1])
-        miscls_df.loc[idx, 'sent'] = sent 
+        sent = ' '.join(full_list[sent_start:sent_end + 1])
+        miscls_df.loc[idx, 'sent'] = sent
         continue
       else:
         if real_i <= idx and idx < sent_breaker[i + 1]:
           sent_start = real_i + 1
           sent_end = sent_breaker[i + 1]
           print(idx, sent_start, sent_end)
-          sent = ' '.join(full_list[sent_start: sent_end+1])
-          miscls_df.loc[idx, 'sent'] = sent  
+          sent = ' '.join(full_list[sent_start:sent_end + 1])
+          miscls_df.loc[idx, 'sent'] = sent
           continue
-    
+
   return miscls_df
 
 
 def sklearnEval(result_df, is_bio, break_down_path=None):
-  
+
   if not is_bio:
     size = len(result_df)
     for s in range(size):
-      result_df.loc[s, 'gold'] = result_df.loc[s, 'gold'].replace('B-', '').replace('I-', '')
-      result_df.loc[s, 'pred'] = result_df.loc[s, 'pred'].replace('B-', '').replace('I-', '')
+      result_df.loc[s, 'gold'] = result_df.loc[s, 'gold'].replace('B-',
+                                                                  '').replace(
+                                                                      'I-', '')
+      result_df.loc[s, 'pred'] = result_df.loc[s, 'pred'].replace('B-',
+                                                                  '').replace(
+                                                                      'I-', '')
       # result_df.to_csv('no_bio_result.csv')
       file_prefix = 'no_bio_'
   else:
@@ -96,10 +99,11 @@ def sklearnEval(result_df, is_bio, break_down_path=None):
   target_names = sorted(result_df.gold.unique())
   print('Labels: {}\n'.format(target_names))
   # target_names = [t for t in target_names if t != 'O']
-  
-  y_true = result_df.gold 
+
+  y_true = result_df.gold
   y_pred = result_df.pred
-  classification_report = metrics.classification_report(y_true, y_pred, digits=4, target_names=target_names, zero_division=1)
+  classification_report = metrics.classification_report(
+      y_true, y_pred, digits=4, target_names=target_names, zero_division=1)
   getBreakdowns(result_df, target_names, file_prefix, break_down_path)
   # miscls_df = findSentBoundary(result_df, target_names)
   # miscls_df.to_csv('miscls_df.csv')
@@ -113,19 +117,20 @@ def sklearnEval(result_df, is_bio, break_down_path=None):
   beta = 1.0
 
   # get scores
-  macro_f_score = round(metrics.fbeta_score(y_true, y_pred, beta=beta, average='macro'), 4)
-  micro_f_score = round(metrics.fbeta_score(y_true, y_pred, beta=beta, average='micro'), 4)
-  weighted_avg_f_score = round(metrics.fbeta_score(y_true, y_pred, beta=beta, average='weighted'), 4)
+  macro_f_score = round(
+      metrics.fbeta_score(y_true, y_pred, beta=beta, average='macro'), 4)
+  micro_f_score = round(
+      metrics.fbeta_score(y_true, y_pred, beta=beta, average='micro'), 4)
+  weighted_avg_f_score = round(
+      metrics.fbeta_score(y_true, y_pred, beta=beta, average='weighted'), 4)
   accuracy_score = round(metrics.accuracy_score(y_true, y_pred), 4)
 
-  detailed_result = (
-      "\nResults:"
-      f"\n- F-score (macro) {macro_f_score}"
-      f"\n- F-score (micro) {micro_f_score}"
-      f"\n- F1-score (weighted) {weighted_avg_f_score}"
-      f"\n- Accuracy {accuracy_score}"
-      '\n\nBy class:\n' + classification_report
-  )
+  detailed_result = ("\nResults:"
+                     f"\n- F-score (macro) {macro_f_score}"
+                     f"\n- F-score (micro) {micro_f_score}"
+                     f"\n- F1-score (weighted) {weighted_avg_f_score}"
+                     f"\n- Accuracy {accuracy_score}"
+                     '\n\nBy class:\n' + classification_report)
   print(detailed_result)
 
 
@@ -140,19 +145,23 @@ def getBreakdowns(result_df, labels, file_prefix, save_folder=None):
     target_label = label
     other_labels = [l for l in labels if l != target_label]
     for mis_label in other_labels:
-      sub_df = result_df.loc[(result_df.gold==target_label) & (result_df.pred==mis_label)]
+      sub_df = result_df.loc[(result_df.gold == target_label) &
+                             (result_df.pred == mis_label)]
       sub_df.reset_index(drop=True, inplace=True)
       # sub_df.to_csv(save_folder + file_prefix + label + '_' + mis_label + '.csv')
+
 
 def removeOCls(df):
   df = df.loc[(df.gold != 'O') & (df.pred != 'O')]
   df.reset_index(drop=True, inplace=True)
-  return df 
+  return df
+
 
 if __name__ == '__main__':
   # FlairEmbModels / WordEmbModels / TransEmbModels / WordEmbTransEmbModels / GloveFlairFwBwModels
-  result_df = removeBioFromResult('2pt5pct/GloveFlairFwBwModels/test.tsv')
+  # result_df = removeBioFromResult('2pt5pct/GloveFlairFwBwModels/test.tsv')
+  result_df = removeBioFromResult(
+      'conll_frac/100ptdata/models-5e-20201124/test.tsv')
   # result_df = removeOCls(result_df)
   # is_bio=True
-  sklearnEval(result_df, is_bio=False, break_down_path=None) 
-  
+  sklearnEval(result_df, is_bio=True, break_down_path=None)
