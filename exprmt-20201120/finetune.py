@@ -1,8 +1,3 @@
-# 20200921
-# try train model on synthetic data
-# sanity check first
-## read data and save them as conll_03 format in order to reuse *reproduce_ner.py*
-
 import numpy as np
 import os
 from pathlib import Path
@@ -23,6 +18,7 @@ from flair.trainers import ModelTrainer
 from flair.datasets import ColumnCorpus
 import argparse
 import pdb
+from flair.datasets import CONLL_03
 
 
 def convertData(data_dir, save_dir):
@@ -71,12 +67,13 @@ def trainNER(data_dir, model_dir):
                       help="The pretrained model to produce embeddings")
   args = parser.parse_args()
   model = args.model
-  # columns = {0 : 'text', 1 : 'ner'}
+
   # pdb.set_trace()
-  # print(data_dir + '/eng.train')
-  from flair.datasets import CONLL_03
-  corpus: Corpus = CONLL_03(base_path='conll_frac/10ptdata/')
-  # corpus: Corpus = ColumnCorpus(data_dir, columns)
+  try:
+    corpus: Corpus = CONLL_03(base_path=data_dir + '/')
+  except FileNotFoundError:
+    columns = {0: 'text', 1: 'ner'}
+    corpus: Corpus = ColumnCorpus(data_dir, columns)
   corpus.filter_empty_sentences()
   tag_type = 'ner'
   # tag_dictionary = corpus.make_tag_dictionary(tag_type=tag_type)
@@ -111,7 +108,7 @@ def trainNER(data_dir, model_dir):
 
   trainer: ModelTrainer = ModelTrainer(tagger, corpus)
 
-  trainer.train(model_dir, train_with_dev=True, max_epochs=10)  # 150
+  trainer.train(model_dir, train_with_dev=False, max_epochs=10)  # 150
 
 
 def testModel(model_dir, test_sent=None, test_file_dir=None):
@@ -138,17 +135,21 @@ def testModel(model_dir, test_sent=None, test_file_dir=None):
   if test_file_dir:
     print('Predicting in plural mode')
     try:
-      columns = {0: 'text', 1: 'ner'}
-      corpus = ColumnCorpus(test_file_dir, columns)
+      corpus = CONLL_03(base_path=test_file_dir + '/')
       test_data = corpus.test
     except:
-      raise Exception(
-          'Directory must contain `test.txt` file, one column `text` the other `ner`'
-      )
+      try:
+        columns = {0: 'text', 1: 'ner'}
+        corpus = ColumnCorpus(test_file_dir, columns)
+        test_data = corpus.test
+      except AttributeError:
+        raise Exception(
+            'Directory must contain `test.txt` file, one column `text` the other `ner`'
+        )
 
     test_result, test_loss = model.evaluate(test_data,
                                             out_path=test_file_dir +
-                                            '/test_20201124.tsv')
+                                            '/test_20201203.tsv')
     result_line = f"\t{test_loss}\t{test_result.log_line}"
     print(f"TEST : loss {test_loss} - score {round(test_result.main_score, 4)}")
     print(f"TEST RESULT : {result_line}")
@@ -169,11 +170,17 @@ if __name__ == '__main__':
   # convertData('2pt5pct', '2pt5pct/data')
   # trainNER('2pt5pct/data', '2pt5pct/models')
   # convertData('exprmt-20201120/oneshot-conll/conll_03', 'exprmt-20201120/oneshot-conll/conll_03/data')
-  trainNER('conll_frac/10ptdata', 'conll_frac/10ptdata/models_20201201')
+  # trainNER('conll_frac/20ptdata', 'conll_frac/20ptdata/models_20201201')
 
-  testModel(
-      'conll_frac/10ptdata/models_20201201',
-      test_sent=
-      'Alejandro Lanusse , the former dictator who ruled Argentina for two years , died at age 78 on Monday .'
-  )
-  # testModel('conll_03/models_20201124', test_file_dir='conll_03/data')
+  # testModel(
+  #     'conll_frac/20ptdata/models_20201201',
+  #     test_sent=
+  #     'Alejandro Lanusse , the former dictator who ruled Argentina for two years , died at age 78 on Monday .'
+  # )
+  # testModel('conll_frac/20ptdata/models_20201201',
+  #           test_file_dir='conll_frac/20ptdata')
+
+  trainNER('../GmbDataExperimentation/processed_data/full_data',
+           './GmbData/full_data/models')
+  testModel('./GmbData/full_data/models',
+            test_file_dir='../GmbDataExperimentation/processed_data/full_data')

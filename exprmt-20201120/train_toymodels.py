@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import random
 import torch
+from flair.datasets import CONLL_03
 
 seed = 2020
 random.seed(seed)
@@ -74,8 +75,8 @@ def trainNER(data_dir, model_dir):
   # columns = {0 : 'text', 1 : 'ner'}
   # pdb.set_trace()
   # print(data_dir + '/eng.train')
-  from flair.datasets import CONLL_03
-  corpus: Corpus = CONLL_03(base_path='oneshot-conll/')
+
+  corpus: Corpus = CONLL_03(base_path=data_dir + '/')
   # corpus: Corpus = ColumnCorpus(data_dir, columns)
   corpus.filter_empty_sentences()
   tag_type = 'ner'
@@ -110,7 +111,7 @@ def trainNER(data_dir, model_dir):
 
   trainer: ModelTrainer = ModelTrainer(tagger, corpus)
 
-  trainer.train(model_dir, train_with_dev=True, max_epochs=10)  # 150
+  trainer.train(model_dir, train_with_dev=False, max_epochs=10)  # 150
 
 
 def testModel(model_dir, test_sent=None, test_file_dir=None):
@@ -168,11 +169,12 @@ if __name__ == '__main__':
   # convertData('2pt5pct', '2pt5pct/data')
   # trainNER('2pt5pct/data', '2pt5pct/models')
   # convertData('exprmt-20201120/oneshot-conll/conll_03', 'exprmt-20201120/oneshot-conll/conll_03/data')
-  trainNER('conll_03/data', 'conll_03/models_20201124')
+  trainNER('conll_frac/20ptdata', 'conll_frac/20ptdata/models_20201202')
 
-  testModel(
-      'conll_03/models_20201124',
-      test_sent=
-      'Alejandro Lanusse , the former dictator who ruled Argentina for two years , died at age 78 on Monday .'
-  )
-  testModel('conll_03/models_20201124', test_file_dir='conll_03/data')
+  # testModel(
+  #     'conll_03/models_20201124',
+  #     test_sent=
+  #     'Alejandro Lanusse , the former dictator who ruled Argentina for two years , died at age 78 on Monday .'
+  # )
+  testModel('conll_frac/20ptdata/models_20201202',
+            test_file_dir='conll_frac/20ptdata')
