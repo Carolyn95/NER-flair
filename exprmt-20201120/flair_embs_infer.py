@@ -1,5 +1,6 @@
 # 20200903
 # FLAIR NER INFER
+# CONLL03 dataset only
 from __future__ import absolute_import, division, print_function
 # evaluate using trained model to see if my modification is correct or not
 from flair.data import Sentence
@@ -8,6 +9,7 @@ import argparse
 
 from flair.data import Corpus
 from flair.datasets import CONLL_03
+from flair.datasets import ColumnCorpus
 
 
 def main():
@@ -39,13 +41,24 @@ def main():
   args = parser.parse_args()
 
   model_path = args.model_dir
+  data_dir = args.data_dir
   model = SequenceTagger.load(model_path + '/final-model.pt')
+  try:
 
-  corpus: Corpus = CONLL_03(base_path=args.data_dir)
+    corpus: Corpus = CONLL_03(base_path=data_dir)
+
+  except:
+    pass
+    columns = {0: 'text', 1: 'ner'}
+    corpus: Corpus = ColumnCorpus(data_dir, columns)
+
   if args.eval_on == 'dev':
     testdata = corpus.dev
   elif args.eval_on == 'test':
     testdata = corpus.test
+  elif args.eval_on == 'train':
+    print('You are evaluating on training set!')
+    testdata = corpus.train
   else:
     raise ValueError("Invalid argument, must specify evaluation on dev or test")
 

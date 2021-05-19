@@ -1,5 +1,7 @@
-import numpy as np 
-import pdb 
+import numpy as np
+import pdb
+# All possible datasets (incl. conll03)
+# need to configure data path in the code
 
 
 def filterByEntityType(data_path, ent_type, new_ent_type):
@@ -28,21 +30,21 @@ def flairInfer(model_path, test_or_train):
   from flair.data import Corpus
   from flair.datasets import CONLL_03
   from flair.datasets import ColumnCorpus
-  
+
   model = SequenceTagger.load(model_path + '/final-model.pt')
-  data_dir = '../2pt5pct/loc_data'
+  data_dir = '../GmbDataExperimentation/processed_data/1500_data'
   try:
-  
+
     corpus: Corpus = CONLL_03(base_path=data_dir)
-    
+
   except:
-    pass 
-    columns = {0 : 'text', 1 : 'ner'}
+    pass
+    columns = {0: 'text', 1: 'ner'}
     corpus: Corpus = ColumnCorpus(data_dir, columns)
   if test_or_train == 'train':
     testdata = corpus.train
     result_file = data_dir + '/train.tsv'
-  else: 
+  else:
     testdata = corpus.test
     result_file = data_dir + '/test.tsv'
 
@@ -65,9 +67,8 @@ if __name__ == '__main__':
   # train_data = filterByEntityType(train_data_path, ent_type, new_ent_type)
   # print('Train data length is {}'.format(len(train_data)))
   # saveData(train_data, '../2pt5pct/loc_data/train.txt')
-  
+
   # model_path = '../GmpDataExperimentation/taggers'
   # model_path = '../GmpDataExperimentation/processed_data/15_data/models'
-  model_path = '../reproduce_ner_10epochs/taggers/sota-ner'
-  flairInfer(model_path, 'test') # train | test
- 
+  model_path = './GmbData/1500_data/models'
+  flairInfer(model_path, 'train')  # train | test

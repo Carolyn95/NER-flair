@@ -149,7 +149,7 @@ def testModel(model_dir, test_sent=None, test_file_dir=None):
 
     test_result, test_loss = model.evaluate(test_data,
                                             out_path=test_file_dir +
-                                            '/test_20201203.tsv')
+                                            '/test_20201210.tsv')
     result_line = f"\t{test_loss}\t{test_result.log_line}"
     print(f"TEST : loss {test_loss} - score {round(test_result.main_score, 4)}")
     print(f"TEST RESULT : {result_line}")
@@ -180,7 +180,7 @@ if __name__ == '__main__':
   # testModel('conll_frac/20ptdata/models_20201201',
   #           test_file_dir='conll_frac/20ptdata')
 
-  trainNER('../GmbDataExperimentation/processed_data/full_data',
-           './GmbData/full_data/models')
-  testModel('./GmbData/full_data/models',
-            test_file_dir='../GmbDataExperimentation/processed_data/full_data')
+  trainNER('../GmbDataExperimentation/processed_data/1500_data',
+           './GmbData/1500_data/models')
+  testModel('./GmbData/1500_data/models',
+            test_file_dir='../GmbDataExperimentation/processed_data/1500_data')
